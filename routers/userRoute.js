@@ -2,11 +2,12 @@ const express = require("express");
 const userRoute = express.Router();
 const { responseSuccess, responseError } = require("../util");
 const connec = require("../models/connectDB");
+const bcrybt = require("bcrypt");
 const asyncHandler = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
 // bắt đầu cái mới
-
+const hashsalt = 10;
 userRoute.get(
   "/user",
   asyncHandler(async (req, res) => {
@@ -88,22 +89,52 @@ userRoute.put(
   "/user",
   asyncHandler(async (req, res) => {
     const connection = await connec();
-    const { idUser, fullName, phoneNumber, address, role } = req.body;
+    const { idUser, fullName, phoneNumber, address, role, password } = req.body;
+    console.log(password);
     try {
-      const sql_update =
-        "UPDATE `user_details` SET `full_name`=?,`phone`=?,`address`=? WHERE user_details.id_user=?";
-      const [results_update] = await connection.execute(sql_update, [
-        fullName,
-        phoneNumber,
-        address,
-        idUser,
-      ]);
-      const sql_update_role = "UPDATE `users` SET `role`=? WHERE users.id=?";
-      const [results] = await connection.execute(sql_update_role, [
-        role,
-        idUser,
-      ]);
-      res.json(responseSuccess(res.statusCode, "cập nhập thành công", results));
+      const sql_check_user_detail =
+        "SELECT * FROM `user_details` WHERE user_details.id_user=?";
+      const [check] = await connection.execute(sql_check_user_detail, [idUser]);
+      if (check.length <= 0) {
+        const sql_insert_to_user_detail =
+          "INSERT INTO `user_details`(`id_user`, `full_name`, `phone`, `address`) VALUES (?, ?, ?, ?)";
+        const [result_insert_to_user_detail] = await connection.execute(
+          sql_insert_to_user_detail,
+          [idUser, fullName, phoneNumber, address]
+        );
+      } else {
+        const sql_update =
+          "UPDATE `user_details` SET `full_name`=?,`phone`=?,`address`=? WHERE user_details.id_user=?";
+        const [results_update] = await connection.execute(sql_update, [
+          fullName,
+          phoneNumber,
+          address,
+          idUser,
+        ]);
+      }
+      if (password == null) {
+        const sql_update_role_and_password =
+          "UPDATE `users` SET `role`=? WHERE users.id=?";
+        const [results] = await connection.execute(
+          sql_update_role_and_password,
+          [role, idUser]
+        );
+        res.json(
+          responseSuccess(res.statusCode, "cập nhập thành công", results)
+        );
+      } else {
+        const pass = await bcrybt.hash(password, hashsalt);
+        const sql_update_role =
+          "UPDATE `users` SET `role`=? ,`password`=? WHERE users.id=?";
+        const [results] = await connection.execute(sql_update_role, [
+          role,
+          pass,
+          idUser,
+        ]);
+        res.json(
+          responseSuccess(res.statusCode, "cập nhập thành công", results)
+        );
+      }
     } catch (error) {
       console.log("user");
       console.error(error, "loi trong update user");
@@ -132,6 +163,61 @@ userRoute.get(
       res
         .status(500)
         .json(responseError(res.statusCode, "có lỗi trong truy vấn get role"));
+    } finally {
+      await connection.end();
+    }
+  })
+);
+
+// add new account
+userRoute.post(
+  "/addAccount",
+  asyncHandler(async (req, res) => {
+    const connection = await connec();
+    console.log(req.body);
+    try {
+      const [results] = await connection.query(
+        "SELECT * FROM `users` WHERE users.email=?",
+        [req.body.email]
+      );
+
+      if (results.length > 0) {
+        return res.json(success(402, "Email Tài khoản đã tồn tại"));
+      }
+      const password = await bcrybt.hash(req.body.password, hashsalt);
+      const [resultAccount] = await connection.query(
+        "INSERT INTO `users`(`email`, `password`, `role`) VALUES (?,?,?)",
+        [req.body.email, password, req.body.role]
+      );
+      res.json(
+        responseSuccess(201, "Thêm tài khoản thành công", resultAccount)
+      );
+    } catch (error) {
+      console.log(error);
+      res
+        .status(500)
+        .json({ error: "Đã xảy ra lỗi khi truy vấn cơ sở dữ liệu account" });
+    } finally {
+      await connection.end();
+    }
+  })
+);
+// xóa user
+userRoute.delete(
+  "/deleteAccount/:id",
+  asyncHandler(async (req, res) => {
+    const connection = await connec();
+    const id_account = req.params.id;
+    try {
+      console.log(id_account);
+      const sql_delete = "DELETE FROM `users` WHERE users.id=?";
+      const [result] = await connection.execute(sql_delete, [id_account]);
+      res.json(responseSuccess(200, "Xóa tài khoản thành công", result));
+    } catch (error) {
+      console.log(error);
+      res
+        .status(500)
+        .json({ error: "Đã xảy ra lỗi khi truy vấn cơ sở dữ liệu account" });
     } finally {
       await connection.end();
     }
