@@ -130,6 +130,7 @@ variantRoute.get(
     const search = req.query?.search;
 
     try {
+      console.log("tìm kiếm");
       let sql = `SELECT product_detail.id, products.name,products.first_image,products.price,colors.color, sizes.size, categories.name as 'category' FROM \`product_detail\` JOIN products on product_detail.id_product= products.id JOIN colors ON colors.id = product_detail.id_color JOIN sizes on sizes.id= product_detail.id_size JOIN categories On categories.id = products.category_id WHERE products.name LIKE "%${search}%" OR sizes.size LIKE "${search}"  OR colors.color LIKE "${search}"`;
       const [results] = await connection.query(sql);
       res.json(responseSuccess(200, "kết quả tìm kiếm", results));
