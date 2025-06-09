@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const router = require("./routers");
 const { success } = require("./util/response");
 const jwtMiddleware = require("./middleware/jwtMiddleware.js");
+const PORT = process.env.PORT_SEVER || 3000;
 require("dotenv").config();
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -19,6 +20,6 @@ app.get("/home", jwtMiddleware, (req, res) => {
   res.json(success(res.statusCode, "vào home thành công"));
 });
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
   console.log("xin chao ngai dinh quang ha");
 });
