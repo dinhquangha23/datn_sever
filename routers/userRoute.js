@@ -223,6 +223,26 @@ userRoute.delete(
     }
   })
 );
+userRoute.get(
+  "/userSearch",
+  asyncHandler(async (req, res) => {
+    const connection = await connec();
+    const search = req.query?.search;
+
+    try {
+      let sql = `SELECT users.*,user_details.id AS \`id_user_detail\`, user_details.full_name,user_details.phone, user_details.address FROM \`users\`  LEFT JOIN user_details ON users.id = user_details.id_user WHERE users.email LIKE "%${search}%" OR user_details.full_name LIKE "%${search}%" OR user_details.address LIKE "%${search}%" OR user_details.phone LIKE "%${search}%"`;
+      const [results] = await connection.query(sql);
+      res.json(responseSuccess(200, "kết quả tìm kiếm", results));
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        error: "Đã xảy ra lỗi khi truy vấn cơ sở dữ liệu trong search product",
+      });
+    } finally {
+      await connection.end();
+    }
+  })
+);
 
 // kết thúc cái mới
 

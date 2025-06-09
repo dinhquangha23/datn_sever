@@ -28,6 +28,27 @@ paymentRoute.get(
   })
 );
 
+paymentRoute.get(
+  "/paymentSearch",
+  asyncHandler(async (req, res) => {
+    const connection = await connec();
+    const search = req.query?.search;
+
+    try {
+      let sql = `SELECT payment.*,orders.id_user,user_details.full_name,user_details.phone, user_details.address FROM \`payment\` JOIN \`orders\` ON orders.id= payment.id_order JOIN \`user_details\` ON user_details.id_user= orders.id_user WHERE payment.transaction_id LIKE "%${search}%" OR payment.payment_status LIKE "%${search}%" OR user_details.address LIKE "%${search}%" OR user_details.full_name LIKE "%${search}%" or user_details.phone LIKE "%${search}%"`;
+      const [results] = await connection.query(sql);
+      res.json(responseSuccess(200, "kết quả tìm kiếm", results));
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        error: "Đã xảy ra lỗi khi truy vấn cơ sở dữ liệu trong search product",
+      });
+    } finally {
+      await connection.end();
+    }
+  })
+);
+
 // kết thúc cái mới
 
 // paymentRoute.get(

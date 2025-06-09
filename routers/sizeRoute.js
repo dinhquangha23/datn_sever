@@ -124,4 +124,25 @@ sizeRoute.delete(
   })
 );
 
+sizeRoute.get(
+  "/sizeSearch",
+  asyncHandler(async (req, res) => {
+    const connection = await connec();
+    const search = req.query?.search;
+
+    try {
+      let sql = `SELECT * FROM \`sizes\` WHERE sizes.size LIKE "%${search}%"`;
+      const [results] = await connection.query(sql);
+      res.json(responseSuccess(200, "kết quả tìm kiếm", results));
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        error: "Đã xảy ra lỗi khi truy vấn cơ sở dữ liệu trong search product",
+      });
+    } finally {
+      await connection.end();
+    }
+  })
+);
+
 module.exports = sizeRoute;

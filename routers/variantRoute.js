@@ -47,6 +47,10 @@ variantRoute.post(
     const connection = await connec();
     try {
       const { id_color, id_size, id_product } = req.body;
+
+      // const sql_check_variant_exist = "SELECT * FROM `product_detail` WHERE product_detail.id_product=? AND product_detail.id_size=? AND product_detail.id_color=?"
+      // const [result_chek]=await connection.execute(sql_check_variant_exist,[id_product,id_size,id_color])
+      // console.log(result_chek)
       const insert_product_detail =
         "INSERT INTO `product_detail`(`id_product`, `id_size`, `id_color`) VALUES (?, ?, ?)";
       const [results] = await connection.execute(insert_product_detail, [
@@ -131,7 +135,7 @@ variantRoute.get(
 
     try {
       console.log("tìm kiếm");
-      let sql = `SELECT product_detail.id, products.name,products.first_image,products.price,colors.color, sizes.size, categories.name as 'category' FROM \`product_detail\` JOIN products on product_detail.id_product= products.id JOIN colors ON colors.id = product_detail.id_color JOIN sizes on sizes.id= product_detail.id_size JOIN categories On categories.id = products.category_id WHERE products.name LIKE "%${search}%" OR sizes.size LIKE "${search}"  OR colors.color LIKE "${search}"`;
+      let sql = `SELECT product_detail.id, products.name,products.first_image,products.price,colors.color, sizes.size, categories.name as 'category' FROM \`product_detail\` JOIN products on product_detail.id_product= products.id JOIN colors ON colors.id = product_detail.id_color JOIN sizes on sizes.id= product_detail.id_size JOIN categories On categories.id = products.category_id WHERE products.name LIKE "%${search}%" OR sizes.size LIKE "${search}%"  OR colors.color LIKE "%${search}%"`;
       const [results] = await connection.query(sql);
       res.json(responseSuccess(200, "kết quả tìm kiếm", results));
     } catch (error) {

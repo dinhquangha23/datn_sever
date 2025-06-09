@@ -336,4 +336,25 @@ orderRoute.post(
   })
 );
 
+orderRoute.get(
+  "/orderSearch",
+  asyncHandler(async (req, res) => {
+    const connection = await connec();
+    const search = req.query?.search;
+
+    try {
+      let sql = `SELECT O.*,UD.full_name,UD.phone,UD.address,Pay.payment_status FROM \`orders\` O JOIN \`user_details\` UD ON O.id_user = UD.id_user LEFT JOIN \`payment\` Pay ON Pay.id_order = O.id WHERE UD.full_name LIKE "%${search}%" OR UD.phone LIKE "%${search}%" OR UD.address LIKE "%${search}%" OR O.total_money LIKE "%${search}%" OR O.status LIKE "%${search}%"`;
+      const [results] = await connection.query(sql);
+      res.json(responseSuccess(200, "kết quả tìm kiếm", results));
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        error: "Đã xảy ra lỗi khi truy vấn cơ sở dữ liệu trong search product",
+      });
+    } finally {
+      await connection.end();
+    }
+  })
+);
+
 module.exports = orderRoute;
