@@ -34,7 +34,7 @@ accontRouter.post(
         "INSERT INTO `users`(`email`, `password`) VALUES (?,?)",
         [req.body.email, password]
       );
-      res.json(resultAccount);
+      res.json(responseSuccess(200, "Đăng kí thành công", resultAccount));
     } catch (error) {
       console.log(error);
       res
