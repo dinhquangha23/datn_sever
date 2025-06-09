@@ -6,7 +6,7 @@ let connection = async () => {
     user: process.env.USER,
     password: process.env.PASSWORD,
     database: process.env.DATABASE_NAME,
-    port: process.env.PORT,
+    port: "3306",
     connectionLimit: 20,
     namedPlaceholders: true,
   });

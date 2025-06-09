@@ -5,12 +5,13 @@ const bodyParser = require("body-parser");
 const router = require("./routers");
 const { success } = require("./util/response");
 const jwtMiddleware = require("./middleware/jwtMiddleware.js");
-const PORT = process.env.PORT_SEVER || 3000;
-require("dotenv").config();
 
+require("dotenv").config();
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
 app.use(cors());
 app.use("/public", express.static("public"));
 
@@ -20,6 +21,6 @@ app.get("/home", jwtMiddleware, (req, res) => {
   res.json(success(res.statusCode, "vào home thành công"));
 });
 
-app.listen(PORT, () => {
+app.listen(3000, () => {
   console.log("xin chao ngai dinh quang ha");
 });
