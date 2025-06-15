@@ -59,7 +59,15 @@ colorRoute.post(
     const connection = await connec();
     const { color } = req.body;
     try {
-      // console.log(size);
+      const sql_check_color = "SELECT * FROM `colors` WHERE colors.color=?";
+      const [retsult_check] = await connection.execute(sql_check_color, [
+        color,
+      ]);
+      if (retsult_check.length > 0) {
+        return res.json(
+          responseSuccess(200, "color đã tồn tại", retsult_check)
+        );
+      }
       const [results] = await connection.execute(
         "INSERT INTO `colors`(`color`) VALUES (?)",
         [color]

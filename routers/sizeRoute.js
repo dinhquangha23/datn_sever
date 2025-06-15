@@ -61,6 +61,12 @@ sizeRoute.post(
     const { size } = req.body;
     try {
       // console.log(size);
+
+      const sql_check_size = "SELECT * FROM `sizes` WHERE sizes.size=?";
+      const [retsult_check] = await connection.execute(sql_check_size, [size]);
+      if (retsult_check.length > 0) {
+        return res.json(responseSuccess(200, "size đã tồn tại", retsult_check));
+      }
       const [results] = await connection.execute(
         "INSERT INTO `sizes`(`size`) VALUES (?)",
         [size]

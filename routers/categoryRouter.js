@@ -34,7 +34,16 @@ categoryRoute.post(
     const connection = await connec();
     const { name } = req.body;
     try {
-      console.log(name);
+      const sql_check_category =
+        "SELECT * FROM `categories` WHERE categories.name=?";
+      const [retsult_check] = await connection.execute(sql_check_category, [
+        name,
+      ]);
+      if (retsult_check.length > 0) {
+        return res.json(
+          responseSuccess(200, "category đã tồn tại", retsult_check)
+        );
+      }
       const [results] = await connection.execute(
         "INSERT INTO `categories`(`name`) VALUES (?)",
         [name]

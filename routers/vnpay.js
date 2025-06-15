@@ -47,9 +47,6 @@ vnpayRoute.post(
       vnp_IpAddr: ipAddr,
       vnp_CreateDate: createDate,
     };
-    // if (bankCode !== "") {
-    //   vnp_Params["vnp_BankCode"] = bankCode;
-    // }
 
     function sortObject(obj) {
       const sorted = {};
