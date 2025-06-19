@@ -12,7 +12,8 @@ const asyncHandler = (fn) => (req, res, next) => {
 const vnp_TmnCode = process.env.VNP_TMNCODE;
 const vnp_HashSecret = process.env.VNP_HASHSECRET;
 const vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-const vnp_ReturnUrl = "http://localhost:5173/paysuccess";
+const vnp_ReturnUrl = process.env.RETURN_URL;
+// const vnp_ReturnUrl = "http://localhost:5173/paysuccess";
 // const vnp_ReturnUrl = "http://localhost:3000/api/vnpay_return";
 
 vnpayRoute.post(
