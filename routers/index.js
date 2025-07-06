@@ -13,6 +13,7 @@ const variantRoute = require("./variantRoute");
 const sizeRoute = require("./sizeRoute");
 const colorRoute = require("./colorRoute");
 const ghnRoute = require("./ghnRouter");
+const statisticalRoute = require("./statistical");
 // router account
 router.use(accountRouter);
 
@@ -43,5 +44,7 @@ router.use(paymentRoute);
 router.use(categoryRoute);
 // router GHN
 router.use(ghnRoute);
+//router statistical
+router.use(statisticalRoute);
 
 module.exports = router;
