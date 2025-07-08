@@ -301,7 +301,7 @@ productRoute.get(
     const search = req.query?.search;
 
     try {
-      console.log("tìm kiếm");
+      // console.log("tìm kiếm");
       let sql = `SELECT products.*,categories.name As \`category_name\` FROM \`products\` JOIN categories ON products.category_id = categories.id WHERE products.name LIKE "%${search}%" OR products.price <="${search}" OR categories.name LIKE "%${search}%"`;
       const [results] = await connection.query(sql);
       res.json(responseSuccess(200, "kết quả tìm kiếm", results));
