@@ -16,10 +16,10 @@ app.use(cors());
 app.use("/public", express.static("public"));
 
 app.use("/api", router);
-app.get("/home", jwtMiddleware, (req, res) => {
-  console.log(req.user);
-  res.json(success(res.statusCode, "vào home thành công"));
-});
+// app.get("/home", jwtMiddleware, (req, res) => {
+//   console.log(req.user);
+//   res.json(success(res.statusCode, "vào home thành công"));
+// });
 
 app.listen(3000, () => {
   console.log("xin chao ngai dinh quang ha");
